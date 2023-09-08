@@ -3,6 +3,7 @@
 import sys
 import requests
 
+
 def check_arg():
     num_arg = len(sys.argv)
     if num_arg == 1:
@@ -34,7 +35,8 @@ for task in data:
     if task["completed"]:
         completed_tasks += 1
 
-print("Employee {} is done with tasks({}/{}):".format(data[0]["name"], completed_tasks, total_tasks))
+print("Employee {} is done with tasks({}/{}):"
+      .format(data[0]["name"], completed_tasks, total_tasks))
 
 for task in data:
     if task["completed"]:
