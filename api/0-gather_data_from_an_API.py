@@ -29,14 +29,17 @@ data = response.json()
 
 total_tasks = 0
 completed_tasks = 0
+employee_name = None
 
 for task in data:
     total_tasks += 1
     if task["completed"]:
         completed_tasks += 1
+    if not employee_name:
+        employee_name = task.get("name")
 
 print("Employee {} is done with tasks({}/{}):"
-      .format(data[0]["name"], completed_tasks, total_tasks))
+      .format(employee_name, completed_tasks, total_tasks))
 
 for task in data:
     if task["completed"]:
