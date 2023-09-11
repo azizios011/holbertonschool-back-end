@@ -36,7 +36,7 @@ for task in data:
     if task["completed"]:
         completed_tasks += 1
     if not employee_name:
-        employee_name = task.get("name")
+        employee_name = task["userId"]
 
 print("Employee {} is done with tasks({}/{}):"
       .format(employee_name, completed_tasks, total_tasks))
