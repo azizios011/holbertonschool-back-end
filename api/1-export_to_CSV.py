@@ -53,4 +53,4 @@ with open(csv_filename, mode='w', newline='') as csv_file:
         title = task["title"]
         csv_writer.writerow([user_id, username, completed, title])
 
-print("Data exported to {}".format(csv_filename))
+print("Number of tasks in CSV: OK ({})".format(num_tasks))
