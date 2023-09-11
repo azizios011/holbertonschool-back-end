@@ -29,7 +29,6 @@ if response.status_code != 200:
 
 data = response.json()
 
-# Extract the user information
 user_url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
 user_response = requests.get(user_url)
 
@@ -41,7 +40,6 @@ user_data = user_response.json()
 user_id = user_data["id"]
 username = user_data["username"]
 
-# Create a CSV file with the user ID as the filename
 csv_filename = "{}.csv".format(user_id)
 
 with open(csv_filename, mode='w', newline='') as csv_file:
