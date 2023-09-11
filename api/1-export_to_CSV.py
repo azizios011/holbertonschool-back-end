@@ -5,7 +5,6 @@ import requests
 import sys
 
 
-
 def check_arg():
     num_arg = len(sys.argv)
     if num_arg == 1:
