@@ -1,57 +1,42 @@
 #!/usr/bin/python3
+"""Script that exports data in the CSV format using a REST API"""
 
 import csv
 import requests
 import sys
 
-
-def check_arg():
-    num_arg = len(sys.argv)
-    if num_arg == 1:
-        print("Error: missing argument")
+if __name__ == "__main__":
+    # Get the employee ID from the command line argument
+    employee_id = sys.argv[1]
+    # Validate that the employee ID is an integer
+    if not employee_id.isdigit():
+        print("Usage: {} <employee ID>".format(sys.argv[0]))
         sys.exit(1)
-    elif num_arg > 2:
-        print("Error: too many arguments")
-        sys.exit(1)
-    else:
-        return int(sys.argv[1])
-
-
-employee_id = check_arg()
-
-url = "https://jsonplaceholder.typicode.com/users/{}/todos".format(employee_id)
-
-response = requests.get(url)
-
-if response.status_code != 200:
-    print("Error: Unable to fetch data from the API")
-    sys.exit(1)
-
-data = response.json()
-
-user_url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
-user_response = requests.get(user_url)
-
-if user_response.status_code != 200:
-    print("Error: Unable to fetch user data from the API")
-    sys.exit(1)
-
-user_data = user_response.json()
-user_id = user_data["id"]
-username = user_data["username"]
-
-csv_filename = "{}.csv".format(user_id)
-
-with open(csv_filename, mode='w', newline='') as csv_file:
-    csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_MINIMAL)
-    csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
-
-    for task in data:
-        task_id = task["id"]
-        completed = task["completed"]
-        title = task["title"]
-        csv_writer.writerow([user_id, username, completed, title])
-
-# Calculate the number of tasks and print it
-num_tasks = len(data)
-print("Number of tasks in CSV: OK ({})".format(num_tasks))
+    # Make a GET request to the API endpoint for users
+    users_url = "https://jsonplaceholder.typicode.com/users/{}".format(employee_id)
+    users_response = requests.get(users_url)
+    # Check if the response status code is 200 (OK)
+    if users_response.status_code == 200:
+        # Get the JSON data from the response
+        users_data = users_response.json()
+        # Get the employee username from the data
+        employee_username = users_data.get("username")
+        # Make a GET request to the API endpoint for todos
+        todos_url = "https://jsonplaceholder.typicode.com/todos"
+        todos_response = requests.get(todos_url, params={"userId": employee_id})
+        # Check if the response status code is 200 (OK)
+        if todos_response.status_code == 200:
+            # Get the JSON data from the response
+            todos_data = todos_response.json()
+            # Open a CSV file for writing
+            file_name = "{}.csv".format(employee_id)
+            with open(file_name, mode="w") as csv_file:
+                # Create a CSV writer object
+                csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_ALL)
+                # Loop through the todos data
+                for todo in todos_data:
+                    # Get the task completed status and title from the data
+                    task_completed_status = todo.get("completed")
+                    task_title = todo.get("title")
+                    # Write a row in the CSV file with the required format
+                    csv_writer.writerow([employee_id, employee_username, task_completed_status, task_title])
