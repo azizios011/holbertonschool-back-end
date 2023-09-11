@@ -1,15 +1,20 @@
 #!/usr/bin/python3
 
+
 import json
 import requests
 import sys
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python3 2-export_to_JSON.py <USER_ID>")
-        sys.exit(1)
+def export_tasks_to_json(user_id):
+    """
+    Export tasks for a given user to a JSON file.
 
-    user_id = sys.argv[1]
+    Args:
+        user_id (str): The user's ID for whom tasks will be exported.
+
+    Returns:
+        None
+    """
     base_url = "https://jsonplaceholder.typicode.com"
 
     # Fetch the user's data
@@ -41,3 +46,11 @@ if __name__ == "__main__":
         json.dump(result_dict, json_file, indent=4)
 
     print(f"Data exported to {user_id}.json")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 2-export_to_JSON.py <USER_ID>")
+        sys.exit(1)
+
+    user_id = sys.argv[1]
+    export_tasks_to_json(user_id)
