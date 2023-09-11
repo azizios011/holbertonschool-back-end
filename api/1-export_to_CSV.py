@@ -44,8 +44,7 @@ csv_filename = "{}.csv".format(user_id)
 
 with open(csv_filename, mode='w', newline='') as csv_file:
     csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_MINIMAL)
-    csv_writer.writerow(["USER_ID", "USERNAME",
-                         "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+    csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
 
     for task in data:
         task_id = task["id"]
@@ -53,4 +52,6 @@ with open(csv_filename, mode='w', newline='') as csv_file:
         title = task["title"]
         csv_writer.writerow([user_id, username, completed, title])
 
+# Calculate the number of tasks and print it
+num_tasks = len(data)
 print("Number of tasks in CSV: OK ({})".format(num_tasks))
