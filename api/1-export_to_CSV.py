@@ -7,7 +7,6 @@ Author: Your Name
 Date: September 13, 2023
 """
 
-
 import csv
 import requests
 import sys
@@ -16,8 +15,7 @@ users_url = "https://jsonplaceholder.typicode.com/users?id="
 todos_url = "https://jsonplaceholder.typicode.com/todos"
 
 def user_info(id):
-
-     """
+    """
     Retrieve user information and export tasks to CSV.
 
     Args:
@@ -47,4 +45,14 @@ def user_info(id):
         print("Number of tasks in CSV: Incorrect")
 
 if __name__ == "__main__":
-    user_info(int(sys.argv[1]))
+    if len(sys.argv) != 2:
+        print("Usage: python3 1-export_to_CSV.py <employee_id>")
+        sys.exit(1)
+    
+    try:
+        employee_id = int(sys.argv[1])
+    except ValueError:
+        print("Invalid employee ID. Please provide a valid integer.")
+        sys.exit(1)
+
+    user_info(employee_id)
