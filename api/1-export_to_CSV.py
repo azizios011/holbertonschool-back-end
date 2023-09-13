@@ -1,26 +1,41 @@
 #!/usr/bin/python3
 """fetches information from JSONplaceholder API and exports to CSV"""
 
-from csv import DictWriter, QUOTE_ALL
-from requests import get
-from sys import argv
-
+import csv
+import requests
+import sys
 
 if __name__ == "__main__":
-    main_url = "https://jsonplaceholder.typicode.com"
-    todo_url = main_url + "/user/{}/todos".format(argv[1])
-    name_url = main_url + "/users/{}".format(argv[1])
-    todo_result = get(todo_url).json()
-    name_result = get(name_url).json()
+    if len(sys.argv) != 2:
+        print("Usage: python3 1-export_to_CSV.py <employee_id>")
+        sys.exit(1)
 
-    todo_list = []
-    for todo in todo_result:
-        todo_dict = {}
-        todo_dict.update({"user_ID": argv[1], "username": name_result.get(
-            "username"), "completed": todo.get("completed"),
-                          "task": todo.get("title")})
-        todo_list.append(todo_dict)
-    with open("{}.csv".format(argv[1]), 'w', newline='') as f:
-        header = ["user_ID", "username", "completed", "task"]
-        writer = DictWriter(f, fieldnames=header, quoting=QUOTE_ALL)
-        writer.writerows(todo_list)
+    employee_id = sys.argv[1]
+
+    # Make a GET request to retrieve employee data
+    url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    response = requests.get(url)
+    employee_data = response.json()
+
+    if response.status_code != 200:
+        print(f"Employee with ID {employee_id} not found.")
+        sys.exit(1)
+
+    # Make another GET request to retrieve the tasks associated with the employee
+    tasks_url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
+    tasks_response = requests.get(tasks_url)
+    tasks = tasks_response.json()
+
+    # Create a CSV file with the specified format
+    csv_filename = f"{employee_id}.csv"
+    with open(csv_filename, mode="w", newline="") as csv_file:
+        csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_MINIMAL)
+        
+        # Write the header row
+        csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+
+        # Write the task data to the CSV file
+        for task in tasks:
+            csv_writer.writerow([employee_id, employee_data["username"], str(task["completed"]), task["title"]])
+
+    print(f"Data exported to {csv_filename}.")
