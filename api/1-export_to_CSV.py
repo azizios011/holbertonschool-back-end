@@ -1,40 +1,35 @@
 #!/usr/bin/python3
 """ a request """
-import csv
 import requests
+import csv
 import sys
 
-def export_tasks_to_csv(employee_id):
-    # ... (previous code)
-
-    # Create and write data to the CSV file
-    with open(file_name, mode='w', newline='') as csv_file:
-        csv_writer = csv.writer(csv_file)
-        csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
-
-        task_count = 0  # Initialize the task count
-
-        for task in tasks:
-            user_id = user_data['id']
-            username = user_data['username']
-            task_completed = task['completed']
-            task_title = task['title']
-
-            csv_writer.writerow([user_id, username, str(task_completed), task_title])
-            task_count += 1  # Increment the task count for each task
-
-    print(f"Data exported to {file_name}")
-    return task_count  # Return the task count
-
-if __name__ == '__main':
+if __name__ == "__main":
     if len(sys.argv) != 2:
         print("Usage: python3 1-export_to_CSV.py <employee_id>")
         sys.exit(1)
 
     employee_id = sys.argv[1]
-    exported_task_count = export_tasks_to_csv(employee_id)
 
-    # Expected number of tasks
-    expected_task_count = 20  # Set your expected task count here
+    # Fetch user data
+    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
+    user_response = requests.get(user_url)
+    user_data = user_response.json()
+    user_id = user_data['id']
+    username = user_data['username']
 
-    print(f"Number of tasks in CSV: {'OK' if exported_task_count == expected_task_count else 'Mismatch'}")
+    # Fetch todo data
+    todo_url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
+    todo_response = requests.get(todo_url)
+    todo_data = todo_response.json()
+
+    # Create a CSV file with the user's tasks
+    csv_file = f"{user_id}.csv"
+
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+
+        for task in todo_data:
+            task_completed = "True" if task["completed"] else "False"
+            writer.writerow([user_id, username, task_completed, task["title"]])
