@@ -1,58 +1,43 @@
 #!/usr/bin/python3
-
-"""
-This module exports task data to CSV format.
-
-Author: Your Name
-Date: September 13, 2023
-"""
-
 import csv
 import requests
 import sys
 
-users_url = "https://jsonplaceholder.typicode.com/users?id="
-todos_url = "https://jsonplaceholder.typicode.com/todos"
-
-def user_info(id):
-    """
-    Retrieve user information and export tasks to CSV.
-
-    Args:
-        id (int): The user's ID.
-
-    Returns:
-        None
-    """
-
-    total_tasks = 0
-
-    response = requests.get(todos_url).json()
-    for task in response:
-        if task['userId'] == id:
-            total_tasks += 1
-
-    num_lines = 0
-    with open(str(id) + ".csv", 'r') as f:
-        for line in f:
-            if not line.strip():
-                continue
-            num_lines += 1
-
-    if total_tasks == num_lines:
-        print("Number of tasks in CSV: OK")
-    else:
-        print("Number of tasks in CSV: Incorrect")
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: python3 1-export_to_CSV.py <employee_id>")
         sys.exit(1)
-    
-    try:
-        employee_id = int(sys.argv[1])
-    except ValueError:
-        print("Invalid employee ID. Please provide a valid integer.")
+
+    employee_id = sys.argv[1]
+
+    url = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
+    response = requests.get(url)
+    user_data = response.json()
+
+    if 'id' not in user_data:
+        print(f"No user found with ID {employee_id}")
         sys.exit(1)
 
-    user_info(employee_id)
+    tasks_url = f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
+    tasks_response = requests.get(tasks_url)
+    tasks = tasks_response.json()
+
+    if not tasks:
+        print(f"No tasks found for user {user_data['name']}")
+        sys.exit(1)
+
+    file_name = f'{employee_id}.csv'
+
+    with open(file_name, mode='w', newline='') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+
+        for task in tasks:
+            user_id = user_data['id']
+            username = user_data['username']
+            task_completed = task['completed']
+            task_title = task['title']
+
+            csv_writer.writerow([user_id, username, str(task_completed), task_title])
+
+    print(f"Data exported to {file_name}")
