@@ -1,35 +1,34 @@
 #!/usr/bin/python3
-""" a request """
-import requests
+"""Export data in CSV format"""
 import csv
+import requests
 import sys
 
-if __name__ == "__main":
-    if len(sys.argv) != 2:
-        print("Usage: python3 1-export_to_CSV.py <employee_id>")
-        sys.exit(1)
 
-    employee_id = sys.argv[1]
+if __name__ == "__main__":
+    """using REST API Placeholder through parameter"""
+    parametro_id = sys.argv[1]
 
-    # Fetch user data
-    user_url = f"https://jsonplaceholder.typicode.com/users/{employee_id}"
-    user_response = requests.get(user_url)
-    user_data = user_response.json()
-    user_id = user_data['id']
-    username = user_data['username']
+    url = f"https://jsonplaceholder.typicode.com/todos?userId={parametro_id}"
+    url_nombre = f"https://jsonplaceholder.typicode.com/users/{parametro_id}"
 
-    # Fetch todo data
-    todo_url = f"https://jsonplaceholder.typicode.com/todos?userId={employee_id}"
-    todo_response = requests.get(todo_url)
-    todo_data = todo_response.json()
+    respuesta = requests.get(url)
+    respuesta_nombre = requests.get(url_nombre)
 
-    # Create a CSV file with the user's tasks
-    csv_file = f"{user_id}.csv"
+    total_tarea = respuesta.json()
+    informacion_empleado = respuesta_nombre.json()
 
-    with open(csv_file, mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
-
-        for task in todo_data:
-            task_completed = "True" if task["completed"] else "False"
-            writer.writerow([user_id, username, task_completed, task["title"]])
+    formato_archivo = parametro_id + ".csv"
+    with open(formato_archivo, mode='w', newline="") as file:
+        contenedor = []
+        for tarea in total_tarea:
+            formato = [
+                "{}".format(parametro_id),
+                "{}".format(informacion_empleado.get("username")),
+                "{}".format(tarea.get("completed")),
+                "{}".format(tarea.get("title"))
+            ]
+            contenedor.append(formato)
+        escritor_csv = csv.writer(file, quoting=csv.QUOTE_ALL)
+        escritor_csv.writerows(contenedor)
+        print("creado con exito ")
