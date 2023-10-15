@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+""" a request """
 import csv
 import requests
 import sys
