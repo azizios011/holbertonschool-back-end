@@ -1,34 +1,42 @@
 #!/usr/bin/python3
-"""Export data in CSV format"""
+"""
+Uses the JSON placeholder API to query data about an employee and export it to CSV.
+"""
+
 import csv
-import requests
-import sys
+from requests import get
+from sys import argv
 
+if __name__ == '__main':
+    if len(argv) != 2:
+        print("Usage: {} <employee_id>".format(argv[0]))
+        exit(1)
 
-if __name__ == "__main__":
-    """using REST API Placeholder through parameter"""
-    parametro_id = sys.argv[1]
+    employee_id = argv[1]
+    main_url = 'https://jsonplaceholder.typicode.com'
+    todo_url = main_url + "/user/{}/todos".format(employee_id)
+    name_url = main_url + "/users/{}".format(employee_id)
+    todo_result = get(todo_url).json()
+    name_result = get(name_url).json()
 
-    url = f"https://jsonplaceholder.typicode.com/todos?userId={parametro_id}"
-    url_nombre = f"https://jsonplaceholder.typicode.com/users/{parametro_id}"
+    if not todo_result:
+        print("Employee not found or has no tasks.")
+        exit(1)
 
-    respuesta = requests.get(url)
-    respuesta_nombre = requests.get(url_nombre)
+    user_id = name_result.get("id")
+    username = name_result.get("username")
 
-    total_tarea = respuesta.json()
-    informacion_empleado = respuesta_nombre.json()
+    # CSV file name
+    csv_file = "{}.csv".format(user_id)
 
-    formato_archivo = parametro_id + ".csv"
-    with open(formato_archivo, mode='w', newline="") as file:
-        contenedor = []
-        for tarea in total_tarea:
-            formato = [
-                "{}".format(parametro_id),
-                "{}".format(informacion_empleado.get("username")),
-                "{}".format(tarea.get("completed")),
-                "{}".format(tarea.get("title"))
-            ]
-            contenedor.append(formato)
-        escritor_csv = csv.writer(file, quoting=csv.QUOTE_ALL)
-        escritor_csv.writerows(contenedor)
-        print("creado con exito ")
+    with open(csv_file, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
+
+        for todo in todo_result:
+            task_id = todo.get("id")
+            task_title = todo.get("title")
+            task_completed = todo.get("completed")
+            writer.writerow([user_id, username, task_completed, task_title])
+
+    print("Data exported to {}.".format(csv_file))
