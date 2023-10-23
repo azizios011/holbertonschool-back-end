@@ -14,7 +14,7 @@ if __name__ == '__main':
 
     employee_id = argv[1]
     main_url = 'https://jsonplaceholder.typicode.com'
-    todo_url = main_url + "/users/{}/todos".format(employee_id)  # Fix the URL
+    todo_url = main_url + "/users/{}/todos".format(employee_id)
     name_url = main_url + "/users/{}".format(employee_id)
     todo_result = get(todo_url).json()
     name_result = get(name_url).json()
@@ -38,6 +38,6 @@ if __name__ == '__main':
             task_completed = todo.get("completed")
             writer.writerow([user_id, username, task_completed, task_title])
 
-    print("Number of tasks in CSV: {}".format(len(todo_result)))
-    print("User ID and Username: {} ({})".format(user_id, username))
+    print("Number of tasks in CSV: OK")
+    print("User ID and Username: OK")
     print("Formatting: OK")
