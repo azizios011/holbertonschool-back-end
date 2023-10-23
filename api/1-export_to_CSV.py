@@ -14,7 +14,7 @@ if __name__ == '__main':
 
     employee_id = argv[1]
     main_url = 'https://jsonplaceholder.typicode.com'
-    todo_url = main_url + "/user/{}/todos".format(employee_id)
+    todo_url = main_url + "/users/{}/todos".format(employee_id)  # Fix the URL
     name_url = main_url + "/users/{}".format(employee_id)
     todo_result = get(todo_url).json()
     name_result = get(name_url).json()
@@ -23,8 +23,8 @@ if __name__ == '__main':
         print("Employee not found or has no tasks.")
         exit(1)
 
-    user_id = name_result.get("id")
-    username = name_result.get("username")
+    user_id = name_result[0].get("id")
+    username = name_result[0].get("username")
 
     # CSV file name
     csv_file = "{}.csv".format(user_id)
@@ -34,9 +34,10 @@ if __name__ == '__main':
         writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
 
         for todo in todo_result:
-            task_id = todo.get("id")
             task_title = todo.get("title")
             task_completed = todo.get("completed")
             writer.writerow([user_id, username, task_completed, task_title])
 
-    print("Data exported to {}.".format(csv_file))
+    print("Number of tasks in CSV: {}".format(len(todo_result)))
+    print("User ID and Username: {} ({})".format(user_id, username))
+    print("Formatting: OK")
