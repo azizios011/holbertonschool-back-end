@@ -44,4 +44,7 @@ if __name__ == '__main__':
         task_count = len(list(csv_reader)) - 1  # Subtract 1 for the header row
 
     print(f"Data exported to {csv_filename}.")
-    print(f"Number of tasks in CSV: {'OK' if task_count == len(todo_result) else 'Mismatch'}")
+    if task_count == len(todo_result):
+        print("Number of tasks in CSV: OK")
+    else:
+        print("Number of tasks in CSV: Mismatch")
