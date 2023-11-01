@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # Count the tasks in the CSV
     with open(csv_filename, 'r', newline='') as csvfile:
         csv_reader = csv.reader(csvfile)
-        task_count = len(list(csv_reader)) - 1  # Subtract 1 for the header row
+        task_count = len(list(csv_reader))  # Subtract 1 for the header row
 
     print(f"Data exported to {csv_filename}.")
     if task_count == len(todo_result):
