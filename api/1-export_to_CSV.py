@@ -34,8 +34,8 @@ if __name__ == '__main__':
         csv_writer.writerow(["USER_ID", "USERNAME", "TASK_COMPLETED_STATUS", "TASK_TITLE"])
 
         for todo in todo_result:
-            task_completed_status = "True" if todo.get("completed") else "False"
-            task_title = todo.get("title")
+            task_completed_status = "True" if todo["completed"] else "False"
+            task_title = todo["title"]
             csv_writer.writerow([employee_id, employee_name, task_completed_status, task_title])
 
     # Count the tasks in the CSV
